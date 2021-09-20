@@ -1,16 +1,20 @@
-//TODO create observer pattern to generate uid
-const { uid } = require("uid");
-const { writeData } = require("../util");
+const todoCreate = require("../../services/todoCreate");
 
 function createTodo(req, res, next) {
   const { title, content } = req.body;
-  const note = { id: uid(), title, content };
-  writeData(note);
+
+  if (!title || !content) {
+    res.status(304).json({ status: 304, message: "Invalid title or content" });
+    return;
+  }
+  const todo = todoCreate(title, content);
+  if (!todo) {
+    res.status(404).send({ status: 404, message: "Something went wrong" });
+  }
   res.status(201).json({
     status: "Success",
-    data: {
-      note,
-    },
+    results: 1,
+    data: todo,
   });
 }
 
